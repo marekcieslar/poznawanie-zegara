@@ -1,0 +1,76 @@
+const state = { h: 0, m: 0, revealed: false, minuteStep: 1 };
+
+function randomInt(maxExclusive) { return Math.floor(Math.random() * maxExclusive); }
+
+function drawRandomTime() {
+  state.h = randomInt(12); // 0..11
+  // Oblicz możliwe wartości minut wg wybranego kroku
+  const possibleMinutes = Math.floor(60 / state.minuteStep); // np. 12 dla kroku 5
+  state.m = randomInt(possibleMinutes) * state.minuteStep;
+  state.revealed = false;
+  updateClockHands();
+  hideDigital();
+}
+
+function updateClockHands() {
+  const hourDeg = (state.h % 12) * 30 + state.m * 0.5; // 0.5 deg per minute
+  const minuteDeg = state.m * 6; // 360 / 60
+  document.getElementById('hourHand').style.transform = `translate(-50%, -100%) rotate(${hourDeg}deg)`;
+  document.getElementById('minuteHand').style.transform = `translate(-50%, -100%) rotate(${minuteDeg}deg)`;
+  if (state.revealed) updateDigital();
+}
+
+function updateDigital() {
+  const hh = String(state.h).padStart(2,'0');
+  const mm = String(state.m).padStart(2,'0');
+  const el = document.getElementById('digitalTime');
+  el.textContent = `${hh}:${mm}`;
+}
+
+function revealDigital() {
+  if (state.revealed) return; // nothing to do
+  state.revealed = true;
+  updateDigital();
+  const el = document.getElementById('digitalTime');
+  el.classList.remove('hidden');
+  el.setAttribute('aria-hidden','false');
+}
+
+function hideDigital() {
+  const el = document.getElementById('digitalTime');
+  el.classList.add('hidden');
+  el.setAttribute('aria-hidden','true');
+  el.textContent = '';
+}
+
+function buildTicksAndNumbers() {
+  const clock = document.querySelector('.clock');
+  // Avoid duplicates if called again
+  clock.querySelectorAll('.num, .tick').forEach(n => n.remove());
+  for (let i = 0; i < 12; i++) {
+    const num = document.createElement('div');
+    num.className = 'num';
+    const hourNumber = i === 0 ? 12 : i; // 0 -> 12
+    const angleRad = (i * 30 - 90) * Math.PI / 180; // co 30°; -90 aby start u góry
+    const radiusPercent = 44; // lekko dalej skoro brak kresek
+    const x = 50 + radiusPercent * Math.cos(angleRad);
+    const y = 50 + radiusPercent * Math.sin(angleRad);
+    num.style.left = x + '%';
+    num.style.top = y + '%';
+    num.style.transform = 'translate(-50%, -50%)';
+    num.textContent = hourNumber;
+    clock.appendChild(num);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  buildTicksAndNumbers();
+  document.getElementById('randomBtn').addEventListener('click', drawRandomTime);
+  document.getElementById('revealBtn').addEventListener('click', revealDigital);
+  const select = document.getElementById('minuteStep');
+  select.addEventListener('change', e => {
+    state.minuteStep = parseInt(e.target.value, 10) || 1;
+    drawRandomTime();
+  });
+  drawRandomTime();
+});

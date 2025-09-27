@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Zegar – Losowa Godzina</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="app" role="main">
+    <h1 class="visually-hidden">Losowy zegar analogowy</h1>
+    <div class="clock" aria-label="Losowa godzina" aria-live="polite">
+      <div class="hand hour" id="hourHand"></div>
+      <div class="hand minute" id="minuteHand"></div>
+      <div class="center-dot"></div>
+      <!-- Znaczniki i liczby generowane dynamicznie przez JS -->
+      <div class="digital hidden" id="digitalTime" aria-hidden="true"></div>
+    </div>
+    <div class="buttons">
+      <button id="randomBtn" type="button">Losuj</button>
+      <button id="revealBtn" type="button">Sprawdź</button>
+    </div>
+    <div class="controls">
+      <label for="minuteStep">Zakres minut:</label>
+      <select id="minuteStep" aria-label="Rozdzielczość minut">
+        <option value="1">co 1 min</option>
+        <option value="5">co 5 min</option>
+        <option value="15">co 15 min</option>
+      </select>
+    </div>
+  </main>
+  <script src="script.js"></script>
+</body>
+</html>
